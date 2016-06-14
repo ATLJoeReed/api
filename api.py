@@ -15,13 +15,8 @@ app.config.from_object('config')
 
 api = Api(app)
 
-conn = psycopg2.connect(
-    database=settings.DATABASE_NAME,
-    user=settings.DATABASE_USER,
-    password=settings.DATABASE_PASSWORD,
-    host=settings.DATABASE_HOST,
-    port=settings.DATABASE_PORT,
-)
+conn = psycopg2.connect(**settings.credentials)
+
 conn.autocommit = True
 
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -112,7 +107,7 @@ class CreateUser(Resource): # noqa
         sql_dict = {'card_number': request_packet['card_number']}
         cur.execute(constants_sql.GET_GIFT_CARD_INFO, sql_dict)
         gift_card_fetched = cur.fetchone()
-                    
+
         cur.execute(constants_sql.INSERT_PATIENT)
         _ukey_patient = cur.fetchone()[0]
         return jsonify(word=_ukey_patient)
